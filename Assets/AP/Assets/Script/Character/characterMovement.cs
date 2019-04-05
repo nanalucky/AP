@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Valve.VR.InteractionSystem;
+using Valve.VR;
 
 public class characterMovement : MonoBehaviour {
 	public 	bool 				SeeInspector = true;
@@ -88,6 +90,8 @@ public class characterMovement : MonoBehaviour {
 	public LayerMask 			myLayerMask;
 
 
+    public SteamVR_Action_Vector2 actionMove = SteamVR_Input.GetAction<SteamVR_Action_Vector2>("platformer", "Move");
+
     private float               joyHorizontal = 0;
     float                       joyVertical = 0;
 
@@ -161,6 +165,7 @@ public class characterMovement : MonoBehaviour {
     {
         refScaleCrouch = gameObject.transform.localScale.y;     // Save the character standing size
         charCol = GetComponent<CapsuleCollider>();
+        actionMove.actionSet.Activate();
     }
 
 
@@ -199,6 +204,23 @@ public class characterMovement : MonoBehaviour {
 
         axisHorizontal = Input.GetAxis(ingameGlobalManager.instance.inputListOfStringGamepadAxis[HorizontalAxisBody]);
         AxisVertical = Input.GetAxis(ingameGlobalManager.instance.inputListOfStringGamepadAxis[VerticalAxisBody]);
+
+        if (ingameGlobalManager.instance.isSteamVR())
+        {
+            axisHorizontal = 0.0f;
+            AxisVertical = 0.0f;
+            Hand[] hands = Player.instance.GetComponentsInChildren<Hand>();
+            foreach (Hand hand in hands)
+            {
+                Vector2 move = actionMove[hand.handType].axis;
+                if (move.magnitude > 0.005f)
+                {
+                    axisHorizontal = move.x;
+                    AxisVertical = move.y;
+                    break;
+                }
+            }
+        }
 
         XAxis = returnDesktopXAxis();
         YAxis = returnDesktopYAxis();
@@ -242,7 +264,14 @@ public class characterMovement : MonoBehaviour {
 
                         Input.GetKeyDown(ingameGlobalManager.instance.inputListOfStringKeyboardButton[KeyboardCrouch]) &&
                         ingameGlobalManager.instance.b_DesktopInputs &&
-                        !ingameGlobalManager.instance.b_Joystick)
+                        ingameGlobalManager.instance.isKeyboardAndMouse()
+                        
+                    ||
+
+
+                        ingameGlobalManager.instance.GetSteamVRCrouch() &&
+                        ingameGlobalManager.instance.b_DesktopInputs &&
+                        ingameGlobalManager.instance.isSteamVR())
                     {
                         
                         if (b_Crouch && AP_CheckIfPlayerCanStopCrouching() || !b_Crouch){
@@ -297,6 +326,16 @@ public class characterMovement : MonoBehaviour {
         }
     }
 
+    void LateUpdate()
+    {
+        if (ingameGlobalManager.instance.isSteamVR())
+        {
+            Player.instance.transform.position = transform.position;
+            Player.instance.transform.rotation = transform.rotation;
+        }
+
+    }
+
 
     //--> Desktop Case : Body rotation
     private void bodyRotation()
@@ -305,7 +344,7 @@ public class characterMovement : MonoBehaviour {
         if (ingameGlobalManager.instance.mouseWaitUnitlFirstMouseMove)
         {
 
-            if (!ingameGlobalManager.instance.b_Joystick && mouseHorizontal != 0)
+            if (!ingameGlobalManager.instance.isJoystickorSteamVR() && mouseHorizontal != 0)
             {
                 tmpXAxis = mouseInputX * 1.1f;
                 tmpXAxis *= sensibilityMouse * ingameGlobalManager.instance.inputListOfFloatKeyboardButton[mouseInGameSensibilty];
@@ -327,6 +366,10 @@ public class characterMovement : MonoBehaviour {
                                                      objCamera.localEulerAngles.y,
                                                      0);
         }
+        else if (ingameGlobalManager.instance.isSteamVR())
+        {
+            objCamera.localEulerAngles = Player.instance.hmdTransform.localEulerAngles;
+        }
         #endregion
     }
 
@@ -347,7 +390,7 @@ public class characterMovement : MonoBehaviour {
         if (ingameGlobalManager.instance.mouseWaitUnitlFirstMouseMove)
         {
             // Mouse Case
-            if (!ingameGlobalManager.instance.b_Joystick && mouseVertical != 0)
+            if (!ingameGlobalManager.instance.isJoystickorSteamVR() && mouseVertical != 0)
             {
                 tmpYAxis = mouseVertical;
 
@@ -366,7 +409,7 @@ public class characterMovement : MonoBehaviour {
 
         }
         // Joystick Case
-        else if (ingameGlobalManager.instance.b_Joystick)
+        else if (ingameGlobalManager.instance.b_Joystick || ingameGlobalManager.instance.isSteamVR())
         {
             // camera X rotation is calculated in section bodyRotation() for gamepad inputs
 
@@ -378,6 +421,7 @@ public class characterMovement : MonoBehaviour {
         }
 
         mouseYLastValue = Input.GetAxis(s_mouseAxisY);
+
         #endregion
     }
 
@@ -405,7 +449,8 @@ public class characterMovement : MonoBehaviour {
 
         Vector3 Direction = new Vector3 (0,0, 0);
 
-		if (ingameGlobalManager.instance.b_Joystick) {
+
+		if (ingameGlobalManager.instance.isJoystickorSteamVR()) {
 			// --> Left and Right Movement	Joystick
 			if (axisHorizontal > minimumAxisMovement) {
 				Direction += FindTangentX () * axisHorizontal;
@@ -418,7 +463,7 @@ public class characterMovement : MonoBehaviour {
 			Direction += FindTangentX () * XAxis;
 		}
 
-		if (ingameGlobalManager.instance.b_Joystick) {
+		if (ingameGlobalManager.instance.isJoystickorSteamVR()) {
 		// --> Forward backward movement Joystick
          
                 if (AxisVertical > minimumAxisMovement) {
@@ -448,7 +493,6 @@ public class characterMovement : MonoBehaviour {
         } else if (b_MoveBackward) {
     		Direction -= FindTangentZ () * animationCurveMobileSmoothMove.Evaluate(smoothStart);
    		}
- 
 
         if (preventClimbing.b_preventClimbing){
             Direction.y = 0;
@@ -888,8 +932,8 @@ public class characterMovement : MonoBehaviour {
 
             rbBodyCharacter.constraints = RigidbodyConstraints.FreezeRotation;
         }
-        else if (YAxis == 0 && XAxis == 0 && ingameGlobalManager.instance.b_DesktopInputs && !ingameGlobalManager.instance.b_Joystick ||                                                                    // Keyboard 
-                 AxisVertical == 0 && axisHorizontal == 0 && ingameGlobalManager.instance.b_Joystick ||     // Joystick
+        else if (YAxis == 0 && XAxis == 0 && ingameGlobalManager.instance.b_DesktopInputs && !ingameGlobalManager.instance.isJoystickorSteamVR() ||                                                                    // Keyboard 
+                 AxisVertical == 0 && axisHorizontal == 0 && ingameGlobalManager.instance.isJoystickorSteamVR() ||     // Joystick
                  mobileLeftJoystickToMove &&  mobileLeftJoystickToMove.inputVector.z == 0 && mobileLeftJoystickToMove.inputVector.x == 0 && !ingameGlobalManager.instance.b_DesktopInputs && b_MobileMovement_Stick|| // Mobile Left Stick
                  !b_MoveForward && !b_MoveBackward  && !b_MoveLeft && !b_MoveRight && !ingameGlobalManager.instance.b_DesktopInputs && !b_MobileMovement_Stick                               // Mobile Left Buttons
                 )
@@ -898,8 +942,8 @@ public class characterMovement : MonoBehaviour {
             rbBodyCharacter.constraints = RigidbodyConstraints.FreezeRotation;
             gravityScale = 0;
         }
-        else if (YAxis == 0 && XAxis != 0 && ingameGlobalManager.instance.b_DesktopInputs && !ingameGlobalManager.instance.b_Joystick ||                                                                    // Keyboard  // Character move only Horizontaly
-                 AxisVertical == 0 && axisHorizontal != 0 && ingameGlobalManager.instance.b_Joystick ||     //Joystick
+        else if (YAxis == 0 && XAxis != 0 && ingameGlobalManager.instance.b_DesktopInputs && !ingameGlobalManager.instance.isJoystickorSteamVR() ||                                                                    // Keyboard  // Character move only Horizontaly
+                 AxisVertical == 0 && axisHorizontal != 0 && ingameGlobalManager.instance.isJoystickorSteamVR() ||     //Joystick
                  mobileLeftJoystickToMove && mobileLeftJoystickToMove.inputVector.z == 0 && mobileLeftJoystickToMove.inputVector.x != 0 && !ingameGlobalManager.instance.b_DesktopInputs && b_MobileMovement_Stick|| // Mobile Left Stick     
                  !b_MoveForward && !b_MoveBackward && (b_MoveLeft || b_MoveRight) && !ingameGlobalManager.instance.b_DesktopInputs && !b_MobileMovement_Stick                               // Mobile Left Buttons
                 )
@@ -914,8 +958,8 @@ public class characterMovement : MonoBehaviour {
             rbBodyCharacter.constraints = RigidbodyConstraints.FreezeRotation;
         }
 
-        if (rbBodyCharacter.velocity.sqrMagnitude * 10000 < 2 && YAxis == 0 && XAxis == 0 && ingameGlobalManager.instance.b_DesktopInputs && isOnFloor && !b_TouchLayer12_17 && !ingameGlobalManager.instance.b_Joystick ||     // Keyboard 
-            rbBodyCharacter.velocity.sqrMagnitude * 10000 < 2 && AxisVertical == 0 && axisHorizontal == 0 && ingameGlobalManager.instance.b_Joystick && isOnFloor && !b_TouchLayer12_17 ||     // Joystick 
+        if (rbBodyCharacter.velocity.sqrMagnitude * 10000 < 2 && YAxis == 0 && XAxis == 0 && ingameGlobalManager.instance.b_DesktopInputs && isOnFloor && !b_TouchLayer12_17 && !ingameGlobalManager.instance.isJoystickorSteamVR() ||     // Keyboard 
+            rbBodyCharacter.velocity.sqrMagnitude * 10000 < 2 && AxisVertical == 0 && axisHorizontal == 0 && ingameGlobalManager.instance.isJoystickorSteamVR() && isOnFloor && !b_TouchLayer12_17 ||     // Joystick 
             mobileLeftJoystickToMove && rbBodyCharacter.velocity.sqrMagnitude * 10000 < 2 && mobileLeftJoystickToMove.inputVector.z == 0 && mobileLeftJoystickToMove.inputVector.x == 0 && !ingameGlobalManager.instance.b_DesktopInputs && isOnFloor && !b_TouchLayer12_17 && b_MobileMovement_Stick ||// Mobile Left Stick
             rbBodyCharacter.velocity.sqrMagnitude * 10000 < 2 && !b_MoveForward && !b_MoveBackward && !b_MoveLeft && !b_MoveRight && !ingameGlobalManager.instance.b_DesktopInputs && isOnFloor && !b_TouchLayer12_17 && !b_MobileMovement_Stick // Mobile Left Buttons
             )

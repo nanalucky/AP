@@ -11,7 +11,8 @@ public class Character : MonoBehaviour {
 
 	private characterMovement	charaMovement;				// Access to the characterMovement component
 	public AudioSource			voiceOverAudioSource;
-
+    public GameObject           mainCamera;
+    public GameObject           VRCamera;
 
 	void Awake()
 	{
@@ -29,6 +30,11 @@ public class Character : MonoBehaviour {
 
 		if (gameObject.GetComponent<characterMovement> ())	// Access to the characterMovement component
 			charaMovement = gameObject.GetComponent<characterMovement> ();
+
+        if (ingameGlobalManager.instance.isSteamVR())
+            switchtoVRCamera();
+        else
+            switchtoMainCamera();
 
 		DontDestroyOnLoad (gameObject);						// Don't destroy if a new scene is loaded
 	}
@@ -52,5 +58,23 @@ public class Character : MonoBehaviour {
 
         }
 	}
+
+    public void switchtoMainCamera()
+    {
+        if (mainCamera != null && VRCamera != null)
+        {
+            mainCamera.SetActive(true);
+            VRCamera.SetActive(false);
+        }
+    }
+
+    public void switchtoVRCamera()
+    {
+        if (mainCamera != null && VRCamera != null)
+        {
+            mainCamera.SetActive(false);
+            VRCamera.SetActive(true);
+        }
+    }
 
 }

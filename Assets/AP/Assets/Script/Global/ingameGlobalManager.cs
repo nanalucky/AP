@@ -9,7 +9,7 @@ using UnityEngine.UI;
 using System;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
-
+using Valve.VR;
 
 public class ingameGlobalManager : MonoBehaviour {
 	public bool							SeeInspector = true;                
@@ -19,8 +19,9 @@ public class ingameGlobalManager : MonoBehaviour {
 	public bool 						b_AllowCharacterMovment = true;     // Know if the character could move
 	public bool 						b_DesktopInputs = true;             // Know if the platform is desktop. True = Desktop | False = mobile
 	public bool 						b_Joystick = false;                 // True Joystick is used | False = Keyboard and mouse are used
+    public bool                         b_SteamVR = false;                  // True SteamVR is used | False = Keyboard and mouse are used
 
-	public datasProjectManager 			dataFolder;                         // Refers to data that contains the global game parameters
+    public datasProjectManager 			dataFolder;                         // Refers to data that contains the global game parameters
 
 	public TextList 					currentDiary;                       // Refers to the current Diary datas
     public TextList 					currentInventory;                   // Refers to the current Inventory datas                   
@@ -848,14 +849,44 @@ public class ingameGlobalManager : MonoBehaviour {
 		return KeyCode.None;
 	}
 
+    public bool isKeyboardAndMouse(){ 
+        if(b_DesktopInputs){
+            if (!b_Joystick && !b_SteamVR)
+                return true;
+            return false;
+         }
+        return false;
+    }
 
-	public void switchKeyboardJoystick(){
-		
-		if (PlayerPrefs.GetInt ("InputsType") == 0) { 	// Desktop
+    public bool isJoystickorSteamVR()
+    {
+        if (b_DesktopInputs && (b_Joystick || b_SteamVR))
+            return true;
+        return false;
+    }
+
+    public bool isSteamVR()
+    {
+        if (b_DesktopInputs && b_SteamVR)
+            return true;
+        return false;
+    }
+
+    public bool isMobile(){
+        if (b_DesktopInputs)
+            return false;
+        return true;
+    }
+
+    public void switchKeyboardJoystick(){
+
+        if (PlayerPrefs.GetInt ("InputsType") == 0) { 	// Desktop
 			b_Joystick = false;}
 		else {											// Joystick
 			b_Joystick = true;}
 
+        b_Joystick = false;
+        b_SteamVR = true;
 
 		if (canvasPlayerInfos) {
 		//Debug.Log ("here visible : " + b_Joystick);
@@ -872,8 +903,21 @@ public class ingameGlobalManager : MonoBehaviour {
 
 				}
 			}
-			// Desktop
-			else if (!b_Joystick) {
+            else if(b_SteamVR){
+                if (SceneManager.GetActiveScene().buildIndex != 0)
+                {
+                    canvasPlayerInfos.gameObject.GetComponent<GraphicRaycaster>().enabled = false;
+                    if (reticuleJoystick && reticuleJoystick.GetComponent<JoystickReticule>().joyReticule2.gameObject.activeSelf)
+                        reticuleJoystick.GetComponent<JoystickReticule>().joyReticule2.gameObject.SetActive(false);    // enable Fake Mouse
+                    Cursor.visible = false;      
+                }
+                else
+                {
+
+                }
+            }
+            // Desktop
+            else if (!b_Joystick && !b_SteamVR) {
 				
 				if (SceneManager.GetActiveScene ().buildIndex != 0) {
                     if (b_DesktopInputs)
@@ -899,12 +943,12 @@ public class ingameGlobalManager : MonoBehaviour {
             // Joystick
             if (b_DesktopInputs)
             {
-                if (b_Joystick && SceneManager.GetActiveScene().buildIndex != 0)
+                if ((b_Joystick || b_SteamVR) && SceneManager.GetActiveScene().buildIndex != 0)
                 {
                     canvasMainMenu.gameObject.GetComponent<GraphicRaycaster>().enabled = false;
                 }
                 // Desktop
-                else if (!b_Joystick && SceneManager.GetActiveScene().buildIndex != 0)
+                else if (!(b_Joystick || b_SteamVR) && SceneManager.GetActiveScene().buildIndex != 0)
                 {
                     canvasMainMenu.gameObject.GetComponent<GraphicRaycaster>().enabled = true;
                 }
@@ -1026,6 +1070,20 @@ public class ingameGlobalManager : MonoBehaviour {
     {
         if (s_Ref) return "T";
         else return "F";
+    }
+
+    public bool GetSteamVRCrouch()
+    {
+        SteamVR_Action_Boolean action = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("default", "GrabGrip");
+        bool state = action.GetState(SteamVR_Input_Sources.LeftHand);
+        return state;
+    }
+
+    public bool GetSteamVRValidate()
+    {
+        SteamVR_Action_Boolean action = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("default", "GrabGrip");
+        bool state = action.GetState(SteamVR_Input_Sources.RightHand);
+        return state;
     }
 
 }

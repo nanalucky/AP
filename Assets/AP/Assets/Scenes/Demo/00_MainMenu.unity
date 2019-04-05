@@ -1410,6 +1410,7 @@ GameObject:
   - component: {fileID: 1086354840}
   - component: {fileID: 1086354839}
   - component: {fileID: 1086354838}
+  - component: {fileID: 1086354834}
   m_Layer: 0
   m_Name: ingameGlobalManager
   m_TagString: Untagged
@@ -1417,6 +1418,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1086354834
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1086354833}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 771c6919f325e0e4a8c979ab301247fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1086354835
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1434,6 +1447,9 @@ MonoBehaviour:
   b_AllowCharacterMovment: 1
   b_DesktopInputs: 1
   b_Joystick: 1
+  b_SteamVR: 0
+  mainCamera: {fileID: 0}
+  VRCamera: {fileID: 0}
   dataFolder: {fileID: 11400000, guid: c6ff2d344038440a2bf51086dc8524c1, type: 2}
   currentDiary: {fileID: 0}
   currentInventory: {fileID: 0}
@@ -2275,6 +2291,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 224038529422647128, guid: bf5ed656b9c2b494cacce6f32339e32c,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -9
+      objectReference: {fileID: 0}
     - target: {fileID: 114936464158635160, guid: bf5ed656b9c2b494cacce6f32339e32c,
         type: 3}
       propertyPath: CurrentPage
@@ -2297,11 +2318,6 @@ PrefabInstance:
     - target: {fileID: 1568642181650350, guid: bf5ed656b9c2b494cacce6f32339e32c, type: 3}
       propertyPath: m_IsActive
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 224038529422647128, guid: bf5ed656b9c2b494cacce6f32339e32c,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bf5ed656b9c2b494cacce6f32339e32c, type: 3}
