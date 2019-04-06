@@ -73,7 +73,9 @@ public class backInputs : MonoBehaviour {
 			if (Input.GetKeyDown (KeyCode.Mouse1) 																				// Mouse right Click
 				|| Input.GetKeyDown (ingameGlobalManager.instance.inputListOfStringKeyboardButton[backButtonDesktop]) 			// Keyboard Back Button	 : Default Escape
 				|| Input.GetKeyDown (ingameGlobalManager.instance.inputListOfStringKeyboardButton[pauseButtonDesktop]) 			// Keyboard Pause Button : Default P
-				|| Input.GetKeyDown (ingameGlobalManager.instance.inputListOfStringGamepadButton[backButtonJoystick])) {		// Joystick back button
+				|| Input.GetKeyDown (ingameGlobalManager.instance.inputListOfStringGamepadButton[backButtonJoystick])
+                || ingameGlobalManager.instance.GetSteamVRBack()
+                || ingameGlobalManager.instance.GetSteamVRPause() ) {		// Joystick back button
 				ingameGlobalManager gManager = ingameGlobalManager.instance;
 				//-> Go back from ingame Multi pages Viewer to game
 				if (gManager.navigationList.Count > 0) {
@@ -117,7 +119,9 @@ public class backInputs : MonoBehaviour {
 					//--> Case avalaible Only for Escape Button	
 					else if (Input.GetKeyDown (ingameGlobalManager.instance.inputListOfStringKeyboardButton[backButtonDesktop]) 	// Keyboard Back Button	 : Default Escape 
 						|| Input.GetKeyDown (ingameGlobalManager.instance.inputListOfStringKeyboardButton[pauseButtonDesktop])  	// Keyboard Pause Button : Default P
-						|| Input.GetKeyDown (gManager.inputListOfStringGamepadButton[backButtonJoystick])) {						// Joystick back button					
+						|| Input.GetKeyDown (gManager.inputListOfStringGamepadButton[backButtonJoystick])
+                        || ingameGlobalManager.instance.GetSteamVRBack()
+                        || ingameGlobalManager.instance.GetSteamVRPause()) {						// Joystick back button					
 						if (SceneManager.GetActiveScene ().buildIndex != 0) {								// Game Scenes
 							if (gManager.navigationList.Count > 0
 								&& gManager.navigationList [gManager.navigationList.Count - 1] == "MainMenuManager") {
@@ -140,7 +144,9 @@ public class backInputs : MonoBehaviour {
 				//-> Open Main Menu
 				else if ((Input.GetKeyDown (ingameGlobalManager.instance.inputListOfStringKeyboardButton[backButtonDesktop]) 	// Keyboard Back Button	 : Default Escape 
 					|| Input.GetKeyDown (ingameGlobalManager.instance.inputListOfStringKeyboardButton[pauseButtonDesktop])  	// Keyboard Pause Button : Default P
-					|| Input.GetKeyDown (gManager.inputListOfStringGamepadButton[backButtonJoystick])) 	&&						// Joystick back button			 
+					|| Input.GetKeyDown (gManager.inputListOfStringGamepadButton[backButtonJoystick])
+                    || ingameGlobalManager.instance.GetSteamVRBack()
+                    || ingameGlobalManager.instance.GetSteamVRPause()) 	&&						// Joystick back button			 
 					     gManager.navigationList.Count == 0 &&
                          !ingameGlobalManager.instance.b_focusModeIsActivated) {
 					MainMenuIngame ();
@@ -238,8 +244,9 @@ public class backInputs : MonoBehaviour {
 
 	public void SceneMainMenu(){
 		ingameGlobalManager gManager = ingameGlobalManager.instance;
-		if (Input.GetKeyDown (ingameGlobalManager.instance.inputListOfStringKeyboardButton[backButtonDesktop]) 		// Keyboard Back Button	 : Default Escape 
-			|| Input.GetKeyDown (gManager.inputListOfStringGamepadButton[backButtonJoystick])
+        if (Input.GetKeyDown(ingameGlobalManager.instance.inputListOfStringKeyboardButton[backButtonDesktop])       // Keyboard Back Button	 : Default Escape 
+            || Input.GetKeyDown(gManager.inputListOfStringGamepadButton[backButtonJoystick])
+            || ingameGlobalManager.instance.GetSteamVRBack()
             || b_doubleTap) {	 				// Joystick back button								
 			if (gManager.navigationList.Count > 0 && 
 				(gManager.navigationList [gManager.navigationList.Count - 1] == "Credit"
@@ -313,7 +320,7 @@ public class backInputs : MonoBehaviour {
 			GameObject  tmp = GameObject.Find ("EventSystem");
 			EventSystem eventSystem = tmp.GetComponent<EventSystem> ();
 			// Keyboard
-			if (!ingameGlobalManager.instance.b_Joystick) {
+			if (ingameGlobalManager.instance.isKeyboardAndMouse()) {
 				Cursor.visible = true;
 				gManager.b_currentCursorVisibility = Cursor.visible;
 			} 
@@ -490,12 +497,12 @@ public class backInputs : MonoBehaviour {
 
 
 		// Desktop
-		if (!gManager.b_Joystick) {
+		if (gManager.isKeyboardAndMouse()) {
 			Cursor.visible = true;
 			gManager.b_currentCursorVisibility = Cursor.visible;
 		} 
 		// Joystick
-		else {
+		else if(gManager.b_Joystick){
 			if (gManager.reticuleJoystickImage && !gManager.reticuleJoystickImage.gameObject.activeSelf) {
                 gManager._joystickReticule.newPosition (Screen.width / 2, Screen.height / 2);
 				gManager.reticuleJoystickImage.gameObject.SetActive (true);

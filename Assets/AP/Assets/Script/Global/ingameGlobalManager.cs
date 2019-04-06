@@ -888,6 +888,15 @@ public class ingameGlobalManager : MonoBehaviour {
         b_Joystick = false;
         b_SteamVR = true;
 
+        if (b_SteamVR)
+        {
+            foreach (SteamVR_ActionSet actionSet in SteamVR_Input.actionSets)
+            {
+                actionSet.Activate();
+            }
+        }
+
+
 		if (canvasPlayerInfos) {
 		//Debug.Log ("here visible : " + b_Joystick);
 			// Joystick
@@ -1082,6 +1091,20 @@ public class ingameGlobalManager : MonoBehaviour {
     public bool GetSteamVRValidate()
     {
         SteamVR_Action_Boolean action = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("default", "GrabGrip");
+        bool state = action.GetState(SteamVR_Input_Sources.RightHand);
+        return state;
+    }
+
+    public bool GetSteamVRBack()
+    {
+        SteamVR_Action_Boolean action = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("buggy", "Reset");
+        bool state = action.GetState(SteamVR_Input_Sources.LeftHand);
+        return state;
+    }
+
+    public bool GetSteamVRPause()
+    {
+        SteamVR_Action_Boolean action = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("buggy", "Reset");
         bool state = action.GetState(SteamVR_Input_Sources.RightHand);
         return state;
     }
