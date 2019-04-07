@@ -8,7 +8,7 @@ public class VRUICanvasGroup : MonoBehaviour
     {
         AddUIItem();
     }
-    private void onEnable()
+    private void OnEnable()
     {
         AddUIItem();
     }
