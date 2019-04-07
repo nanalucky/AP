@@ -49,7 +49,8 @@ public class VRUICamera : MonoBehaviour
         b_UI = false;
 
         VRUIFollowCamera followCamera = gameObject.GetComponentInParent<VRUIFollowCamera>() as VRUIFollowCamera;
-        followCamera.enabled = false;
+        if(followCamera != null)
+            followCamera.enabled = false;
     }
 }
 
