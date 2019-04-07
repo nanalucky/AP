@@ -15,13 +15,12 @@ public class VRUICamera : MonoBehaviour
 
     public static bool b_UI = false;
 
-
     private void OnEnable()
     {
         b_UI = true;
         mainCamera = GameObject.Find("Main Camera");
         vrCamera = GameObject.Find("VRCamera");
-        uiCamera = GameObject.Find("Camera");
+        uiCamera = GameObject.Find("UICamera");
         mainCamera.transform.position = vrCamera.transform.position;
         mainCamera.transform.rotation = vrCamera.transform.rotation;
         mainCamera.transform.localScale = vrCamera.transform.localScale;
@@ -32,10 +31,13 @@ public class VRUICamera : MonoBehaviour
         comMainCamera.CopyFrom(comVRCamera);
         comVRCamera.CopyFrom(comUICamera);
 
-        GameObject grpCanvas = GameObject.Find("Grp_Canvas");
-        Player.instance.transform.position = grpCanvas.transform.position;
-        Player.instance.transform.rotation = grpCanvas.transform.rotation;
+        Player.instance.transform.position = transform.root.transform.position;
+        Player.instance.transform.rotation = transform.root.transform.rotation;
+
+        VRUIFollowCamera followCamera = gameObject.GetComponentInParent<VRUIFollowCamera>() as VRUIFollowCamera;
+        followCamera.enabled = true;
     }
+
 
     private void OnDisable()
     {
@@ -45,6 +47,9 @@ public class VRUICamera : MonoBehaviour
         comVRCamera.CopyFrom(comMainCamera);
         comMainCamera.enabled = false;
         b_UI = false;
+
+        VRUIFollowCamera followCamera = gameObject.GetComponentInParent<VRUIFollowCamera>() as VRUIFollowCamera;
+        followCamera.enabled = false;
     }
 }
 
