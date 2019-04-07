@@ -328,7 +328,7 @@ public class characterMovement : MonoBehaviour {
 
     void LateUpdate()
     {
-        if (ingameGlobalManager.instance.isSteamVR())
+        if (ingameGlobalManager.instance.isSteamVR() && !VRUICamera.b_UI)
         {
             Player.instance.transform.position = transform.position;
             Player.instance.transform.rotation = transform.rotation;
