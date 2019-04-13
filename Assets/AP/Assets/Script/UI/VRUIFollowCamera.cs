@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class VRUIFollowCamera: MonoBehaviour {
 
-    public float distance = 20.0f;
+    private float distance = 15.0f;
 
     private Matrix4x4 matInCam = new Matrix4x4();
     private Camera cameraFollow;
@@ -34,6 +34,9 @@ public class VRUIFollowCamera: MonoBehaviour {
 
     void Update()
     {
+        if (cameraFollow == null)
+            calculateMatInCam();
+
         Matrix4x4 matInWorld = cameraFollow.cameraToWorldMatrix * matInCam;
         transform.FromMatrix(matInWorld);
     }
