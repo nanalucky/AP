@@ -12,13 +12,24 @@ public class VRUIFollowCamera: MonoBehaviour {
     private Matrix4x4 matInCam = new Matrix4x4();
     private Camera cameraFollow;
 
-    private void OnEnable()
+    private void calculateMatInCam()
     {
         cameraFollow = GameObject.Find("VRCamera").GetComponent<Camera>() as Camera;
         Vector3 pos = new Vector3(0.0f, 0.0f, -distance);
         Quaternion rot = new Quaternion();
         rot.eulerAngles = new Vector3(0.0f, 180.0f, 0.0f);
         matInCam.SetTRS(pos, rot, gameObject.transform.localScale);
+    }
+
+    private void Start()
+    {
+        calculateMatInCam();
+    }
+
+
+    private void OnEnable()
+    {
+        calculateMatInCam();
     }
 
     void Update()

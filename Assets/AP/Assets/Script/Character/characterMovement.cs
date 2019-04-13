@@ -235,9 +235,14 @@ public class characterMovement : MonoBehaviour {
        
         if (ingameGlobalManager.instance.b_InputIsActivated)
         {
-            if (ingameGlobalManager.instance.saveAndLoadManager.b_IngameDataHasBeenLoaded
+            if ((ingameGlobalManager.instance.saveAndLoadManager.b_IngameDataHasBeenLoaded
                 && ingameGlobalManager.instance.b_AllowCharacterMovment
                 && !ingameGlobalManager.instance.b_Ingame_Pause)
+                
+                ||
+
+                (ingameGlobalManager.instance.saveAndLoadManager.b_IngameDataHasBeenLoaded
+                && ingameGlobalManager.instance.isSteamVR()))
             {
 
                 //-> Desktop Case
@@ -324,16 +329,6 @@ public class characterMovement : MonoBehaviour {
                                                                       Time.deltaTime * crouchSpeed);
             }
         }
-    }
-
-    void LateUpdate()
-    {
-        if (ingameGlobalManager.instance.isSteamVR() && !VRUICamera.b_UI)
-        {
-            Player.instance.transform.position = transform.position;
-            Player.instance.transform.rotation = transform.rotation;
-        }
-
     }
 
 

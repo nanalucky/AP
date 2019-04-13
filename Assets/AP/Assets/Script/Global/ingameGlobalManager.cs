@@ -260,7 +260,7 @@ public class ingameGlobalManager : MonoBehaviour {
             yield return new WaitForEndOfFrame();
             Cursor.lockState = CursorLockMode.Confined;
            
-            if (b_Joystick){
+            if (b_Joystick || isSteamVR()){
                 if (reticuleJoystick){
                     if (b_showCursor){
                        // reticuleJoystickImage.gameObject.SetActive(false);
