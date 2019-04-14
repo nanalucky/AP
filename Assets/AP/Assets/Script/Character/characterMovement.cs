@@ -40,6 +40,10 @@ public class characterMovement : MonoBehaviour {
 	public float 				currentDesktop_Y_Axis = 0;
 	public float				speedKeybordMovement = 2;
 
+    public float                currentSteamVR_X_Axis = 0;
+    public float                currentSteamVR_Y_Axis = 0;
+    public float                speedSteamVRMovement = 2;
+
 
     //Crouch
     public int                  JoystickCrouch = 2;
@@ -207,19 +211,7 @@ public class characterMovement : MonoBehaviour {
 
         if (ingameGlobalManager.instance.isSteamVR())
         {
-            axisHorizontal = 0.0f;
-            AxisVertical = 0.0f;
-            Hand[] hands = Player.instance.GetComponentsInChildren<Hand>();
-            foreach (Hand hand in hands)
-            {
-                Vector2 move = actionMove[hand.handType].axis;
-                if (move.magnitude > 0.005f)
-                {
-                    axisHorizontal = move.x;
-                    AxisVertical = move.y;
-                    break;
-                }
-            }
+            returnSteamVRAxis();
         }
 
         XAxis = returnDesktopXAxis();
@@ -335,8 +327,8 @@ public class characterMovement : MonoBehaviour {
     {
         if(!VRUICheckInteractable.IsInteractable())
         {
-            Player.instance.transform.position = transform.position;
-            Player.instance.transform.rotation = transform.rotation;
+            Player.instance.transform.position = addForceObj.transform.position;
+            Player.instance.transform.rotation = addForceObj.transform.rotation;
         }
     }
 
@@ -454,31 +446,37 @@ public class characterMovement : MonoBehaviour {
         Vector3 Direction = new Vector3 (0,0, 0);
 
 
-		if (ingameGlobalManager.instance.isJoystickorSteamVR()) {
+		if (ingameGlobalManager.instance.b_Joystick) {
 			// --> Left and Right Movement	Joystick
 			if (axisHorizontal > minimumAxisMovement) {
 				Direction += FindTangentX () * axisHorizontal;
 			} else if (axisHorizontal < -minimumAxisMovement) {
-				Direction -= FindTangentX () * -axisHorizontal;
+				Direction += FindTangentX () * axisHorizontal;
 			}
 		} 
+        else if(ingameGlobalManager.instance.isSteamVR())
+        {
+            Direction += FindTangentX() * axisHorizontal;
+        }
 		// --> Left and Right Movement Keyboard
         else if (ingameGlobalManager.instance.b_DesktopInputs){
 			Direction += FindTangentX () * XAxis;
 		}
 
-		if (ingameGlobalManager.instance.isJoystickorSteamVR()) {
+		if (ingameGlobalManager.instance.b_Joystick) {
 		// --> Forward backward movement Joystick
          
                 if (AxisVertical > minimumAxisMovement) {
-                Direction += FindTangentZ () * -AxisVertical;
+                Direction += FindTangentZ () * AxisVertical;
                 } else if (AxisVertical < -minimumAxisMovement) {
-                    Direction -= FindTangentZ () * AxisVertical;
+                    Direction += FindTangentZ () * AxisVertical;
                 }  
-
-			
 		}
-		// --> Forward backward movement Keyboard
+        else if (ingameGlobalManager.instance.isSteamVR())
+        {
+            Direction += FindTangentZ() * AxisVertical;
+        }
+        // --> Forward backward movement Keyboard
         else if(ingameGlobalManager.instance.b_DesktopInputs){
 
     			Direction += FindTangentZ () * YAxis;
@@ -521,8 +519,8 @@ public class characterMovement : MonoBehaviour {
             
         if (rbBodyCharacter.velocity.magnitude > MaxSpeed)
             rbBodyCharacter.velocity = rbBodyCharacter.velocity.normalized * MaxSpeed;
-        
-	}
+
+    }
 	 
 
 
@@ -575,10 +573,71 @@ public class characterMovement : MonoBehaviour {
 	}
 
 
+    private void returnSteamVRAxis()
+    {
+        float resultX = currentSteamVR_X_Axis;
+        float resultY = currentSteamVR_Y_Axis;
+        bool b_PressX = false;
+        bool b_PressY = false;
+
+        Hand[] hands = Player.instance.GetComponentsInChildren<Hand>();
+        foreach (Hand hand in hands)
+        {
+            Vector2 move = actionMove[hand.handType].axis;
+            if (move.magnitude > 0.005f)
+            {
+                if (move.x > 0.5f)
+                {
+                    if (resultX < 0)
+                        resultX = 0;
+                    resultX = Mathf.MoveTowards(resultX, 1, Time.deltaTime * speedSteamVRMovement);
+                    b_PressX = true;
+                }
+                if (move.x < -0.5f)
+                {
+                    if (resultX > 0)
+                        resultX = 0;
+                    resultX = Mathf.MoveTowards(resultX, -1, Time.deltaTime * speedSteamVRMovement);
+                    b_PressX = true;
+                }
+
+                if (move.y > 0.5f)
+                {
+                    if (resultY < 0)
+                        resultY = 0;
+                    resultY = Mathf.MoveTowards(resultY, 1, Time.deltaTime * speedSteamVRMovement);
+                    b_PressY = true;
+                }
+                if (move.y < -0.5f)
+                {
+                    if (resultY > 0)
+                        resultY = 0;
+                    resultY = Mathf.MoveTowards(resultY, -1, Time.deltaTime * speedSteamVRMovement);
+                    b_PressY = true;
+                }
+
+                break;
+            }
+        }
+
+        if (!b_PressX)
+        {
+            resultX = Mathf.MoveTowards(resultX, 0, Time.deltaTime * speedKeybordMovement * 2);
+        }
+        currentSteamVR_X_Axis = resultX;
+        axisHorizontal = resultX;
+
+        if (!b_PressY)
+        {
+            resultY = Mathf.MoveTowards(resultY, 0, Time.deltaTime * speedKeybordMovement * 2);
+        }
+        currentSteamVR_Y_Axis = resultY;
+        AxisVertical = resultY;
+    }
 
 
-// --> Next Sections are used for mobile virtual buttons
-	public void CamRotationMobile(){
+    // --> Next Sections are used for mobile virtual buttons
+    public void CamRotationMobile(){
         if(b_MobileCamRotation_Stick){      // using right stick to move the player
             float virtualJoyVertical = mobileToystickController.inputVector.z;
 
