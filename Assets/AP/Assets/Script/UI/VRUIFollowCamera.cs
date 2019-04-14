@@ -14,7 +14,11 @@ public class VRUIFollowCamera: MonoBehaviour {
 
     private void calculateMatInCam()
     {
-        cameraFollow = GameObject.Find("VRCamera").GetComponent<Camera>() as Camera;
+        if(VRUICheckInteractable.IsInteractable())
+            cameraFollow = GameObject.Find("VRCamera").GetComponent<Camera>() as Camera;
+        else
+            cameraFollow = GameObject.Find("Camera").GetComponent<Camera>() as Camera;
+
         Vector3 pos = new Vector3(0.0f, 0.0f, -distance);
         Quaternion rot = new Quaternion();
         rot.eulerAngles = new Vector3(0.0f, 180.0f, 0.0f);
@@ -23,22 +27,21 @@ public class VRUIFollowCamera: MonoBehaviour {
 
     private void Start()
     {
-        calculateMatInCam();
+        //calculateMatInCam();
     }
 
 
     private void OnEnable()
     {
-        calculateMatInCam();
+        //calculateMatInCam();
     }
 
     void Update()
     {
-        if (cameraFollow == null)
-            calculateMatInCam();
+        calculateMatInCam();
 
         Matrix4x4 matInWorld = cameraFollow.cameraToWorldMatrix * matInCam;
         transform.FromMatrix(matInWorld);
     }
-
+ 
 }

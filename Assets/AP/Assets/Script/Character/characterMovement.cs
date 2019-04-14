@@ -331,6 +331,15 @@ public class characterMovement : MonoBehaviour {
         }
     }
 
+    private void LateUpdate()
+    {
+        if(!VRUICheckInteractable.IsInteractable())
+        {
+            Player.instance.transform.position = transform.position;
+            Player.instance.transform.rotation = transform.rotation;
+        }
+    }
+
 
     //--> Desktop Case : Body rotation
     private void bodyRotation()

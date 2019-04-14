@@ -11,7 +11,7 @@ public class AP_Cam_Follow : MonoBehaviour {
 
     private void followVRCamera()
     {
-        if (ingameGlobalManager.instance.isSteamVR())
+        if (ingameGlobalManager.instance.isSteamVR() && target != null)
         {
             transform.position = target.position;
             transform.rotation = target.rotation;
@@ -47,8 +47,6 @@ public class AP_Cam_Follow : MonoBehaviour {
                 transform.position = Vector3.Lerp(transform.position, target.position, Time.deltaTime * rotationDamping);
                 transform.rotation = Quaternion.Lerp(transform.rotation, target.rotation, Time.deltaTime * rotationDamping);
             }
-
         }
-      
     }
 }
