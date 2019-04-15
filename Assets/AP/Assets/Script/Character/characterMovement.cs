@@ -327,8 +327,7 @@ public class characterMovement : MonoBehaviour {
     {
         if(!VRUICheckInteractable.IsInteractable())
         {
-            Player.instance.transform.position = addForceObj.transform.position;
-            Player.instance.transform.rotation = addForceObj.transform.rotation;
+            Player.instance.transform.position = gameObject.transform.position;
         }
     }
 
