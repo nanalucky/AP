@@ -127,8 +127,9 @@ public class UIVariousFunctions : MonoBehaviour {
 
 		if (obj.gameObject.CompareTag(ingameGlobalManager.instance.tagList [0])) {		// Type : Item
 			tmpBtn.GetComponent<btn_Check> ().SetupButton (obj, index,b_showTitleOnUIButton);
-		}
-		if (obj.gameObject.CompareTag(ingameGlobalManager.instance.tagList [1])) {		// Type : Action
+            vrIcon.GetComponent<VR_Interact_Event>().SetupButton(obj);
+        }
+        if (obj.gameObject.CompareTag(ingameGlobalManager.instance.tagList [1])) {		// Type : Action
 		}
 		if (obj.gameObject.CompareTag(ingameGlobalManager.instance.tagList [2])) {		// Type : Info
 		}

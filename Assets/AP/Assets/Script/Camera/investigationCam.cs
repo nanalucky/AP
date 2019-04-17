@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Valve.VR;
+using Valve.VR.InteractionSystem;
 
 public class investigationCam : MonoBehaviour {
 	public bool 				SeeInspector = false;
@@ -36,8 +38,14 @@ public class investigationCam : MonoBehaviour {
 	public int 					verticaJloystick 	= 0;
 
     public Transform            lightProbeRef;
+    public SteamVR_Action_Vector2 actionMove = SteamVR_Input.GetAction<SteamVR_Action_Vector2>("platformer", "Move");
 
-	void Update (){
+    private void Start()
+    {
+        actionMove.actionSet.Activate();
+    }
+
+    void Update (){
         if (ingameGlobalManager.instance.b_InputIsActivated)
         {
             if (ingameGlobalManager.instance.b_DesktopInputs)
@@ -74,7 +82,21 @@ public class investigationCam : MonoBehaviour {
 			float joyVertical = Input.GetAxis (ingameGlobalManager.instance.inputListOfStringGamepadAxis [verticaJloystick]);
 			float joyHorizontal = Input.GetAxis (ingameGlobalManager.instance.inputListOfStringGamepadAxis [horizontalJoystick]);
 
-			if (joyHorizontal > minimumAxisMovement || joyHorizontal < -minimumAxisMovement) {
+            if (ingameGlobalManager.instance.isSteamVR())
+            {
+                Hand[] hands = Player.instance.GetComponentsInChildren<Hand>();
+                foreach (Hand hand in hands)
+                {
+                    Vector2 move = actionMove[hand.handType].axis;
+                    if (move.magnitude > 0.005f)
+                    {
+                        joyHorizontal = move.x;
+                        joyVertical = move.y;
+                    }
+                }
+            }
+
+            if (joyHorizontal > minimumAxisMovement || joyHorizontal < -minimumAxisMovement) {
 				int dir = -1;
 				if (joyHorizontal < 0)
 					dir = 1;

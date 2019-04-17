@@ -59,6 +59,8 @@ public class VR_Interact_Event: MonoBehaviour
             {
                 if (objRef == canvas.gameobjectList[i])
                 {
+                    canvas.objVisible[i] = true;
+                    canvas.objrefList[i].SetActive(true);
                     InputModule.instance.Submit(canvas.objrefList[i]);
                     break;
                 }
