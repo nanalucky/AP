@@ -211,17 +211,17 @@ public class characterMovement : MonoBehaviour {
 
         if (ingameGlobalManager.instance.isSteamVR())
         {
-            //returnSteamVRAxis();
-            Hand[] hands = Player.instance.GetComponentsInChildren<Hand>();
-            foreach (Hand hand in hands)
-            {
-                Vector2 move = actionMove[hand.handType].axis;
-                if (move.magnitude > 0.005f)
-                {
-                    axisHorizontal = move.x;
-                    AxisVertical = move.y;
-                }
-            }
+            returnSteamVRAxis();
+            //Hand[] hands = Player.instance.GetComponentsInChildren<Hand>();
+            //foreach (Hand hand in hands)
+            //{
+            //    Vector2 move = actionMove[hand.handType].axis;
+            //    if (move.magnitude > 0.005f)
+            //    {
+            //        axisHorizontal = move.x;
+            //        AxisVertical = move.y;
+            //    }
+            //}
         }
 
         XAxis = returnDesktopXAxis();
