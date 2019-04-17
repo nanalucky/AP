@@ -1856,6 +1856,13 @@ MonoBehaviour:
   - PuzzleIcon
   - InteractObject
   - OnlyFocusIcon
+  vrObjRef:
+  - {fileID: 1329009990065847603, guid: 6645fdb3b789ee34a88372c38fb45593, type: 3}
+  - {fileID: 1329009990065847603, guid: 6645fdb3b789ee34a88372c38fb45593, type: 3}
+  - {fileID: 1329009990065847603, guid: 6645fdb3b789ee34a88372c38fb45593, type: 3}
+  - {fileID: 1329009990065847603, guid: 6645fdb3b789ee34a88372c38fb45593, type: 3}
+  - {fileID: 1329009990065847603, guid: 6645fdb3b789ee34a88372c38fb45593, type: 3}
+  - {fileID: 1329009990065847603, guid: 6645fdb3b789ee34a88372c38fb45593, type: 3}
   b_focusModeIsActivated: 0
   currentFocusedGameObject: {fileID: 0}
   currentobjTranslateRotate: {fileID: 0}
@@ -2767,6 +2774,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 908874601}
     m_Modifications:
+    - target: {fileID: 225940316005721712, guid: 421af170d02bc4dc99cd1557fcb60913,
+        type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 224786121641933308, guid: 421af170d02bc4dc99cd1557fcb60913,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2856,11 +2868,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 225940316005721712, guid: 421af170d02bc4dc99cd1557fcb60913,
-        type: 3}
-      propertyPath: m_Alpha
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114997826530430620, guid: 421af170d02bc4dc99cd1557fcb60913,
         type: 3}
