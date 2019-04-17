@@ -69,6 +69,7 @@ public class ingameGlobalManager : MonoBehaviour {
 	// Ui buttons
 	public 	List<GameObject> 			objRef			= new List<GameObject>();   // 
 	public 	List<string> 				tagList	 		= new List<string> ();
+    public  List<GameObject>            vrObjRef        = new List<GameObject>();
 
 	public bool 						b_focusModeIsActivated = false;
 	public GameObject					currentFocusedGameObject;

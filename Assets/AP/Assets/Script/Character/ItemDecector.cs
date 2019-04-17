@@ -158,6 +158,7 @@ public class ItemDecector : MonoBehaviour {
 				canvas.AutoInstantiateButton (
 					other.gameObject, 
 					ingameGlobalManager.instance.objRef [i],
+                    ingameGlobalManager.instance.vrObjRef[i],
 					other.gameObject.GetComponent<TextProperties> ().managerID,
 					other.gameObject.GetComponent<TextProperties> ().b_UIButtonShowTitle);
 			}
@@ -192,6 +193,7 @@ public class ItemDecector : MonoBehaviour {
 					canvas.AutoInstantiateButton (
                         other.gameObject, 
 						ingameGlobalManager.instance.objRef [i],
+                        ingameGlobalManager.instance.vrObjRef[i],
                         other.gameObject.GetComponent<TextProperties> ().managerID,
                         other.gameObject.GetComponent<TextProperties> ().b_UIButtonShowTitle);
 				} else {
@@ -199,6 +201,7 @@ public class ItemDecector : MonoBehaviour {
 					canvas.AutoInstantiateButton (
                         other.gameObject, 
 						ingameGlobalManager.instance.objRef [i],
+                        ingameGlobalManager.instance.vrObjRef[i],
 						-1,
 						false);
 				}
@@ -235,6 +238,7 @@ public class ItemDecector : MonoBehaviour {
                 canvas.AutoInstantiateButton(
                     other.gameObject,
                     ingameGlobalManager.instance.objRef[i],
+                    ingameGlobalManager.instance.vrObjRef[i],
                     0,
                     false);
             }

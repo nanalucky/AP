@@ -11,7 +11,8 @@ public class UIVariousFunctions : MonoBehaviour {
 	public List<bool> 			objVisible				= new List<bool>();				// know if Interactable Object, item ... in scene view are visible in the scene view (no object between camera and object.)
 	public List<float> 			objrefListCurrentScale	= new List<float>();			// Current scale of UI Icons
 	public List<GameObject> 	gameobjectList 			= new List<GameObject>();		// UI Icon refering to objrefList (same order as objrefList) 
-
+    public List<GameObject>     gbVRIconList = new List<GameObject>();
+    public GameObject           gbVRIconParent;
 
 	public GameObject			btn_Forward;											// Mobile UI. Move forward
 	public GameObject			btn_Backward;											// Mobile UI. Move backward
@@ -110,7 +111,7 @@ public class UIVariousFunctions : MonoBehaviour {
 
 
 // --> Instantiate Icon on screen
-	public void AutoInstantiateButton(GameObject obj, GameObject objRef,int index,bool b_showTitleOnUIButton){
+	public void AutoInstantiateButton(GameObject obj, GameObject objRef,GameObject vrObjRef, int index,bool b_showTitleOnUIButton){
 		GameObject tmpBtn = Instantiate (objRef,this.transform);
 		tmpBtn.transform.localScale = new Vector2 (0, 0);
 		tmpBtn.transform.SetSiblingIndex(0);											// Put the gameObject on the top of the child list to prevent but with mobile Inputs
@@ -119,6 +120,9 @@ public class UIVariousFunctions : MonoBehaviour {
 		objrefListCurrentScale.Add (0);
 
 		gameobjectList.Add (obj);
+
+        GameObject vrIcon = Instantiate(vrObjRef, obj.transform.position, Quaternion.identity, gbVRIconParent.transform);
+        gbVRIconList.Add(vrIcon);
 
 
 		if (obj.gameObject.CompareTag(ingameGlobalManager.instance.tagList [0])) {		// Type : Item
@@ -138,6 +142,7 @@ public class UIVariousFunctions : MonoBehaviour {
 		if (obj.gameObject.CompareTag(ingameGlobalManager.instance.tagList [4])) {		// Type : Interactive Object
 			//Debug.Log("Interctive Object");
 			tmpBtn.GetComponent<btn_Check> ().SetupButton (obj, index,b_showTitleOnUIButton);
+            vrIcon.GetComponent<VR_Interact_Event>().SetupButton(obj);
 		}
 	}
 
@@ -153,8 +158,10 @@ public class UIVariousFunctions : MonoBehaviour {
 				objVisible.RemoveAt (i);
 				objrefListCurrentScale.RemoveAt (i);
 				gameobjectList.RemoveAt (i);
-			}
-		}
+                Destroy(gbVRIconList[i]);
+                gbVRIconList.RemoveAt(i);
+            }
+        }
 	}
 
 	public bool deleteAllButtons(){
@@ -166,8 +173,10 @@ public class UIVariousFunctions : MonoBehaviour {
 			objVisible.RemoveAt (i);
 			objrefListCurrentScale.RemoveAt (i);
 			gameobjectList.RemoveAt (i);
-		}
-		return true;
+            Destroy(gbVRIconList[i]);
+            gbVRIconList.RemoveAt(i);
+        }
+        return true;
 	}
 
 // --> Activate Mobile UI Inputs on screen
