@@ -1082,7 +1082,7 @@ public class ingameGlobalManager : MonoBehaviour {
         else return "F";
     }
 
-    public bool GetSteamVRTeleportPlayer()
+    public bool GetSteamVRValidate()
     {
         SteamVR_Action_Boolean teleportAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("Teleport");
         bool state = teleportAction.GetState(SteamVR_Input_Sources.LeftHand) || teleportAction.GetState(SteamVR_Input_Sources.RightHand);
@@ -1095,7 +1095,7 @@ public class ingameGlobalManager : MonoBehaviour {
         return false;
     }
 
-    public bool GetSteamVRValidate()
+    public bool GetSteamVRTeleportPlayer()
     {
         SteamVR_Action_Boolean action = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("default", "GrabGrip");
         bool state = action.GetState(SteamVR_Input_Sources.LeftHand) || action.GetState(SteamVR_Input_Sources.RightHand);

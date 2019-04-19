@@ -2,14 +2,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Valve.VR;
+using Valve.VR.InteractionSystem;
 
 public class detectPuzzleClick {
     public Transform F_detectPuzzleClick(LayerMask myLayer,ingameGlobalManager _ingameManager, int validationButtonJoystick){
         //-> Joystick Case
-        if (_ingameManager.canvasPlayerInfos.ReticuleJoystick && _ingameManager.b_Joystick && _ingameManager.b_DesktopInputs)  
+        if (_ingameManager.canvasPlayerInfos.ReticuleJoystick && _ingameManager.b_Joystick && _ingameManager.b_DesktopInputs)
             return joystickCheckClick(myLayer, _ingameManager.canvasPlayerInfos.ReticuleJoystick, _ingameManager, validationButtonJoystick);
+        else if (_ingameManager.isSteamVR())
+            return SteamVRCheckClick(_ingameManager);
         //-> Keyboard Case
-        else if (!_ingameManager.b_Joystick && _ingameManager.b_DesktopInputs)    
+        else if (!_ingameManager.b_Joystick && _ingameManager.b_DesktopInputs)
             return keyboardCheckClick(myLayer);
         //-> Mobile case
         else
@@ -35,6 +39,24 @@ public class detectPuzzleClick {
         }
       
         return null;  
+    }
+
+    //--> Check SteamVR
+    public Transform SteamVRCheckClick(ingameGlobalManager _ingameManager)
+    {
+        Hand[] hands = Player.instance.GetComponentsInChildren<Hand>();
+        foreach (Hand hand in hands)
+        { 
+            if(hand.hoveringInteractable != null && hand.hoveringInteractable.gameObject.CompareTag("PuzzleObject"))
+            { 
+                if(_ingameManager.GetSteamVRValidate())
+                {
+                    return hand.hoveringInteractable.transform;
+                }
+            }
+        }
+
+        return null;
     }
 
 

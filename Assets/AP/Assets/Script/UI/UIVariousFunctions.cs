@@ -136,6 +136,12 @@ public class UIVariousFunctions : MonoBehaviour {
 		if (obj.gameObject.CompareTag(ingameGlobalManager.instance.tagList [3])) {		// Type : puzzle
             tmpBtn.GetComponent<btn_Puzzle>().currentPuzzle = obj.transform.parent.gameObject;
             vrIcon.GetComponent<VR_Interact_Event>().SetupButton(obj);
+
+            VR_Interact_Puzzle interactPuzzle = obj.transform.parent.gameObject.GetComponent<VR_Interact_Puzzle>();
+            if (interactPuzzle == null)
+            {
+                obj.transform.parent.gameObject.AddComponent<VR_Interact_Puzzle>();
+            }
 		}
         if (obj.gameObject.CompareTag(ingameGlobalManager.instance.tagList[5]))         // Type : focus Only
         {       
