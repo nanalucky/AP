@@ -15,7 +15,7 @@ public class VRUICanvasGroup : MonoBehaviour
 
     void AddUIItem()
     {
-        Button[] btns = gameObject.GetComponentsInChildren<Button>();
+        Button[] btns = gameObject.GetComponentsInChildren<Button>(true);
         foreach (Button btn in btns)
         {
             VRUIItem uiitem = btn.gameObject.GetComponent<VRUIItem>();

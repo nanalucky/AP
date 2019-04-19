@@ -27,7 +27,7 @@ public class VRUICheckInteractable: MonoBehaviour {
         {
             foreach (Button btn in btns)
             {
-                if (btn.gameObject.transform.parent.gameObject.name == "Canvas_PlayerInfos")
+                if (btn.gameObject.transform.parent.gameObject.name == "Canvas_PlayerInfos")  // Rule out btn_check, btn_interact, btn_puzzle...
                     continue;
 
                 b_Interactable = true;

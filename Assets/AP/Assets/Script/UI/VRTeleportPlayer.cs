@@ -8,22 +8,30 @@ using Valve.VR.Extras;
 
 public class VRTeleportPlayer: MonoBehaviour {
 
-    private bool bLastInteractable;
+    private bool bPlayerWithUI;
 
     void Start()
     {
-        bLastInteractable = VRUICheckInteractable.IsInteractable();
         teleportPlayer();
     }
 
-    private void LateUpdate()
+    private void Update()
     {
-        if (bLastInteractable != VRUICheckInteractable.IsInteractable())
+        if(ingameGlobalManager.instance.currentPuzzle)
         {
-            bLastInteractable = VRUICheckInteractable.IsInteractable();
-            teleportPlayer();
+            if (ingameGlobalManager.instance.GetSteamVRTeleportPlayer())
+                teleportPlayer();
+        }
+        else 
+        {
+            if( (bPlayerWithUI && !VRUICheckInteractable.IsInteractable())
+                || (!bPlayerWithUI && VRUICheckInteractable.IsInteractable()) )
+            {
+                teleportPlayer();
+            }
         }
     }
+
 
     private void teleportPlayer()
     {
@@ -34,7 +42,7 @@ public class VRTeleportPlayer: MonoBehaviour {
         Camera comCamera = gbCamera.GetComponent<Camera>() as Camera;
         Camera comMainCamera = gbMainCamera.GetComponent<Camera>() as Camera;
 
-        if (VRUICheckInteractable.IsInteractable())
+        if (!bPlayerWithUI)
         {
             Player.instance.transform.position = gbCamera.transform.position;
             Player.instance.transform.rotation = gbCamera.transform.rotation;
@@ -48,6 +56,7 @@ public class VRTeleportPlayer: MonoBehaviour {
             comVRCamra.CopyFrom(comCamera);
             comCamera.enabled = false;
             comMainCamera.enabled = true;
+            bPlayerWithUI = true;
         }
         else
         {
@@ -63,6 +72,7 @@ public class VRTeleportPlayer: MonoBehaviour {
             comVRCamra.CopyFrom(comMainCamera);
             comCamera.enabled = true;
             comMainCamera.enabled = false;
+            bPlayerWithUI = false;
         }
     }
 }

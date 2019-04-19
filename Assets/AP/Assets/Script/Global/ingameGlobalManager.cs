@@ -1082,11 +1082,17 @@ public class ingameGlobalManager : MonoBehaviour {
         else return "F";
     }
 
-    public bool GetSteamVRCrouch()
+    public bool GetSteamVRTeleportPlayer()
     {
         SteamVR_Action_Boolean action = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("default", "GrabGrip");
-        bool state = action.GetState(SteamVR_Input_Sources.LeftHand);
+        bool state = action.GetState(SteamVR_Input_Sources.LeftHand) || action.GetState(SteamVR_Input_Sources.RightHand);
         return state;
+    }
+
+    public bool GetSteamVRCrouch()
+    {
+        // Steamvr uses headset to control player's height
+        return false;
     }
 
     public bool GetSteamVRValidate()
