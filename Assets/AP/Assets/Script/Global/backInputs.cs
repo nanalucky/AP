@@ -74,8 +74,8 @@ public class backInputs : MonoBehaviour {
 				|| Input.GetKeyDown (ingameGlobalManager.instance.inputListOfStringKeyboardButton[backButtonDesktop]) 			// Keyboard Back Button	 : Default Escape
 				|| Input.GetKeyDown (ingameGlobalManager.instance.inputListOfStringKeyboardButton[pauseButtonDesktop]) 			// Keyboard Pause Button : Default P
 				|| Input.GetKeyDown (ingameGlobalManager.instance.inputListOfStringGamepadButton[backButtonJoystick])
-                || ingameGlobalManager.instance.GetSteamVRBack()
-                || ingameGlobalManager.instance.GetSteamVRPause() ) {		// Joystick back button
+                || ingameGlobalManager.instance.GetSteamVRBackDown()
+                || ingameGlobalManager.instance.GetSteamVRPauseDown() ) {		// Joystick back button
 				ingameGlobalManager gManager = ingameGlobalManager.instance;
 				//-> Go back from ingame Multi pages Viewer to game
 				if (gManager.navigationList.Count > 0) {
@@ -120,8 +120,8 @@ public class backInputs : MonoBehaviour {
 					else if (Input.GetKeyDown (ingameGlobalManager.instance.inputListOfStringKeyboardButton[backButtonDesktop]) 	// Keyboard Back Button	 : Default Escape 
 						|| Input.GetKeyDown (ingameGlobalManager.instance.inputListOfStringKeyboardButton[pauseButtonDesktop])  	// Keyboard Pause Button : Default P
 						|| Input.GetKeyDown (gManager.inputListOfStringGamepadButton[backButtonJoystick])
-                        || ingameGlobalManager.instance.GetSteamVRBack()
-                        || ingameGlobalManager.instance.GetSteamVRPause()) {						// Joystick back button					
+                        || ingameGlobalManager.instance.GetSteamVRBackDown()
+                        || ingameGlobalManager.instance.GetSteamVRPauseDown()) {						// Joystick back button					
 						if (SceneManager.GetActiveScene ().buildIndex != 0) {								// Game Scenes
 							if (gManager.navigationList.Count > 0
 								&& gManager.navigationList [gManager.navigationList.Count - 1] == "MainMenuManager") {
@@ -145,8 +145,8 @@ public class backInputs : MonoBehaviour {
 				else if ((Input.GetKeyDown (ingameGlobalManager.instance.inputListOfStringKeyboardButton[backButtonDesktop]) 	// Keyboard Back Button	 : Default Escape 
 					|| Input.GetKeyDown (ingameGlobalManager.instance.inputListOfStringKeyboardButton[pauseButtonDesktop])  	// Keyboard Pause Button : Default P
 					|| Input.GetKeyDown (gManager.inputListOfStringGamepadButton[backButtonJoystick])
-                    || ingameGlobalManager.instance.GetSteamVRBack()
-                    || ingameGlobalManager.instance.GetSteamVRPause()) 	&&						// Joystick back button			 
+                    || ingameGlobalManager.instance.GetSteamVRBackDown()
+                    || ingameGlobalManager.instance.GetSteamVRPauseDown()) 	&&						// Joystick back button			 
 					     gManager.navigationList.Count == 0 &&
                          !ingameGlobalManager.instance.b_focusModeIsActivated) {
 					MainMenuIngame ();
@@ -246,7 +246,7 @@ public class backInputs : MonoBehaviour {
 		ingameGlobalManager gManager = ingameGlobalManager.instance;
         if (Input.GetKeyDown(ingameGlobalManager.instance.inputListOfStringKeyboardButton[backButtonDesktop])       // Keyboard Back Button	 : Default Escape 
             || Input.GetKeyDown(gManager.inputListOfStringGamepadButton[backButtonJoystick])
-            || ingameGlobalManager.instance.GetSteamVRBack()
+            || ingameGlobalManager.instance.GetSteamVRBackDown()
             || b_doubleTap) {	 				// Joystick back button								
 			if (gManager.navigationList.Count > 0 && 
 				(gManager.navigationList [gManager.navigationList.Count - 1] == "Credit"

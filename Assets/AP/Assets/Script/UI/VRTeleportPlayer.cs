@@ -19,7 +19,7 @@ public class VRTeleportPlayer: MonoBehaviour {
     {
         if(ingameGlobalManager.instance.currentPuzzle)
         {
-            if (ingameGlobalManager.instance.GetSteamVRTeleportPlayer())
+            if (ingameGlobalManager.instance.GetSteamVRTeleportPlayerDown())
                 teleportPlayer();
         }
         else 
@@ -57,6 +57,9 @@ public class VRTeleportPlayer: MonoBehaviour {
             comCamera.enabled = false;
             comMainCamera.enabled = true;
             bPlayerWithUI = true;
+
+            comVRCamra.clearFlags = CameraClearFlags.Skybox;
+            comMainCamera.enabled = false;
         }
         else
         {

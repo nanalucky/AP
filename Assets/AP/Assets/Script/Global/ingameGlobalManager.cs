@@ -1110,24 +1110,24 @@ public class ingameGlobalManager : MonoBehaviour {
         return false;
     }
 
-    public bool GetSteamVRTeleportPlayer()
+    public bool GetSteamVRTeleportPlayerDown()
     {
         SteamVR_Action_Boolean action = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("default", "GrabGrip");
-        bool state = action.GetState(SteamVR_Input_Sources.LeftHand) || action.GetState(SteamVR_Input_Sources.RightHand);
+        bool state = action.GetStateDown(SteamVR_Input_Sources.LeftHand) || action.GetStateDown(SteamVR_Input_Sources.RightHand);
         return state;
     }
 
-    public bool GetSteamVRBack()
+    public bool GetSteamVRBackDown()
     {
         SteamVR_Action_Boolean action = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("buggy", "Reset");
-        bool state = action.GetState(SteamVR_Input_Sources.LeftHand);
+        bool state = action.GetStateDown(SteamVR_Input_Sources.LeftHand);
         return state;
     }
 
-    public bool GetSteamVRPause()
+    public bool GetSteamVRPauseDown()
     {
         SteamVR_Action_Boolean action = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("buggy", "Reset");
-        bool state = action.GetState(SteamVR_Input_Sources.RightHand);
+        bool state = action.GetStateDown(SteamVR_Input_Sources.RightHand);
         return state;
     }
 
