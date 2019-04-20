@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Valve.VR.InteractionSystem;
 
 public class actionsWhenPuzzleIsSolved : MonoBehaviour {
     public bool                     SeeInspector = false;
@@ -122,22 +123,36 @@ public class actionsWhenPuzzleIsSolved : MonoBehaviour {
             //-> Display feedback camera
             if (listOfEvent[i].feedbackCamera)
             {
-                if(i == 0 ||  b_FeedbackCamera == false && playerCamera.activeSelf){
-                    playerCamera.GetComponent<Camera>().enabled = false;
-                    if(playerCamera.transform.GetChild(0))
-                        playerCamera.transform.GetChild(0).gameObject.SetActive(false);
-                    
-                    if(playerCamera.transform.GetChild(1).CompareTag("a_Listener")){
-                        playerCamera.transform.GetChild(1).transform.position = listOfEvent[i].feedbackCamera.transform.position;
-                        playerCamera.transform.GetChild(1).transform.eulerAngles = listOfEvent[i].feedbackCamera.transform.eulerAngles;
+                if (ingameGlobalManager.instance.isSteamVR())
+                {
+                    VRTeleportPlayer teleportPlayer = ingameGlobalManager.instance.canvasMainMenu.GetComponentInParent<VRTeleportPlayer>() as VRTeleportPlayer;
+                    if (teleportPlayer != null)
+                    {
+                        teleportPlayer.TeleportPlayerToCamera(listOfEvent[i].feedbackCamera);
+                        b_FeedbackCamera = true;
                     }
-                        
                 }
-                else if(listOfEvent[i - 1].feedbackCamera)
-                    listOfEvent[i-1].feedbackCamera.SetActive(false);  
-                
-                listOfEvent[i].feedbackCamera.SetActive(true);
-                b_FeedbackCamera = true;
+                else
+                {
+                    if (i == 0 || b_FeedbackCamera == false && playerCamera.activeSelf)
+                    {
+                        playerCamera.GetComponent<Camera>().enabled = false;
+                        if (playerCamera.transform.GetChild(0))
+                            playerCamera.transform.GetChild(0).gameObject.SetActive(false);
+
+                        if (playerCamera.transform.GetChild(1).CompareTag("a_Listener"))
+                        {
+                            playerCamera.transform.GetChild(1).transform.position = listOfEvent[i].feedbackCamera.transform.position;
+                            playerCamera.transform.GetChild(1).transform.eulerAngles = listOfEvent[i].feedbackCamera.transform.eulerAngles;
+                        }
+
+                    }
+                    else if (listOfEvent[i - 1].feedbackCamera)
+                        listOfEvent[i - 1].feedbackCamera.SetActive(false);
+
+                    listOfEvent[i].feedbackCamera.SetActive(true);
+                    b_FeedbackCamera = true;
+                }
             } 
 
             //-> Popup object
@@ -161,15 +176,22 @@ public class actionsWhenPuzzleIsSolved : MonoBehaviour {
             listOfEvent[listOfEvent.Count-1].feedbackCamera.SetActive(false);
 
 
-        //audioListener.enabled = true;
-        playerCamera.GetComponent<Camera>().enabled = true;
-        if (playerCamera.transform.GetChild(0))
-        playerCamera.transform.GetChild(0).gameObject.SetActive(true);
-
-        if (playerCamera.transform.GetChild(1).CompareTag("a_Listener"))
+        if (ingameGlobalManager.instance.isSteamVR())
         {
-            playerCamera.transform.GetChild(1).transform.localPosition = Vector3.zero;
-            playerCamera.transform.GetChild(1).transform.localEulerAngles = Vector3.zero;
+
+        }
+        else
+        {
+            //audioListener.enabled = true;
+            playerCamera.GetComponent<Camera>().enabled = true;
+            if (playerCamera.transform.GetChild(0))
+                playerCamera.transform.GetChild(0).gameObject.SetActive(true);
+
+            if (playerCamera.transform.GetChild(1).CompareTag("a_Listener"))
+            {
+                playerCamera.transform.GetChild(1).transform.localPosition = Vector3.zero;
+                playerCamera.transform.GetChild(1).transform.localEulerAngles = Vector3.zero;
+            }
         }
 
         Cursor.visible = true;

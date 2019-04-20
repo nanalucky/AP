@@ -44,7 +44,7 @@ public class VRTeleportPlayer: MonoBehaviour {
 
         if (!bPlayerWithUI)
         {
-            Player.instance.transform.position = gbCamera.transform.position;
+            Player.instance.transform.position = new Vector3(gbCamera.transform.position.x, gbCamera.transform.position.y - Player.instance.hmdTransform.localPosition.y, gbCamera.transform.position.z);
             Player.instance.transform.rotation = gbCamera.transform.rotation;
             foreach (Hand _hand in Player.instance.hands)
             {
@@ -74,5 +74,23 @@ public class VRTeleportPlayer: MonoBehaviour {
             comMainCamera.enabled = false;
             bPlayerWithUI = false;
         }
+    }
+
+    public void TeleportPlayerToCamera(GameObject gbOtherCamera)
+    {
+        GameObject gbVRCamera = GameObject.Find("VRCamera");
+        GameObject gbCamera = GameObject.Find("Camera");
+        GameObject gbMainCamera = GameObject.Find("Main Camera");
+        Camera comVRCamra = gbVRCamera.GetComponent<Camera>() as Camera;
+        Camera comCamera = gbCamera.GetComponent<Camera>() as Camera;
+        Camera comMainCamera = gbMainCamera.GetComponent<Camera>() as Camera;
+        Camera comOtherCamera = gbOtherCamera.GetComponent<Camera>() as Camera;
+
+        Player.instance.transform.position = new Vector3(gbOtherCamera.transform.position.x, gbOtherCamera.transform.position.y - Player.instance.hmdTransform.localPosition.y, gbOtherCamera.transform.position.z);
+        Player.instance.transform.rotation = gbOtherCamera.transform.rotation;
+
+        comVRCamra.CopyFrom(comOtherCamera);
+        comMainCamera.enabled = false;
+        comCamera.enabled = false;
     }
 }
