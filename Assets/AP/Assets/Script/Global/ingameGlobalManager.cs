@@ -10,6 +10,7 @@ using System;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using Valve.VR;
+using Valve.VR.InteractionSystem;
 
 public class ingameGlobalManager : MonoBehaviour {
 	public bool							SeeInspector = true;                
@@ -1086,6 +1087,20 @@ public class ingameGlobalManager : MonoBehaviour {
     {
         SteamVR_Action_Boolean teleportAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("Teleport");
         bool state = teleportAction.GetState(SteamVR_Input_Sources.LeftHand) || teleportAction.GetState(SteamVR_Input_Sources.RightHand);
+        return state;
+    }
+
+    public bool GetSteamVRValidateDown(Hand hand)
+    {
+        SteamVR_Action_Boolean teleportAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("Teleport");
+        bool state = teleportAction.GetLastStateDown(hand.handType);
+        return state;
+    }
+
+    public bool GetSteamVRValidateUp(Hand hand)
+    {
+        SteamVR_Action_Boolean teleportAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("Teleport");
+        bool state = teleportAction.GetStateUp(hand.handType);
         return state;
     }
 

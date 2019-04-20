@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using System.Collections;
+using Valve.VR.InteractionSystem;
 
 namespace AP_
 {
@@ -30,6 +31,7 @@ namespace AP_
         public LayerMask myLayer2;                                       // Layer : PuzzleFeedbackCam. Use to detect the PuzzleRefPosition. Tag : PuzzleRefPosition
         public bool puzzleObjectDetectionIsActivated = false;       // Allow object detection if True    
 
+        public Hand currentHand;
         public GameObject currentSelectedGameObject;                      // The current selected object
         public GameObject lastSelectedGameObject;                         // Remember the last select object
 
@@ -119,7 +121,9 @@ namespace AP_
                         //-> Raycast object in the Scene View. 
                         if (ReticuleJoystick && ingameGlobalManager.instance.b_Joystick && ingameGlobalManager.instance.b_DesktopInputs)    // Joystick Case
                             CheckObjectWithTag_Joystick(b_PuzzleRefPosition);
-                        else if (!ingameGlobalManager.instance.b_Joystick && ingameGlobalManager.instance.b_DesktopInputs)                  // Keyboard Case
+                        else if (ingameGlobalManager.instance.isSteamVR())
+                            CheckObjectWithTag_SteamVR(b_PuzzleRefPosition);
+                        else if (!ingameGlobalManager.instance.isJoystickorSteamVR() && ingameGlobalManager.instance.b_DesktopInputs)                  // Keyboard Case
                             CheckObjectWithTag_Keyboard(b_PuzzleRefPosition, b_Wait);
                         else
                             CheckObjectWithTag_Mobile(b_PuzzleRefPosition, b_Wait);                                                         // Mobile Case
@@ -245,7 +249,14 @@ namespace AP_
                 currentSelectedGameObject.transform.GetComponent<Rigidbody>().isKinematic = false;
             }
 
+            if (currentSelectedGameObject && currentSelectedGameObject.GetComponent<Interactable>())
+            {
+                currentSelectedGameObject.GetComponent<Interactable>().highlightOnHover = true;
+                currentSelectedGameObject.GetComponent<Interactable>().enabled = true;
+            }
+
             currentSelectedGameObject = null;
+            currentHand = null;
 
             if (a_TakeObject && b_PlaySound) a_TakeObject.Play();              // Play a sound
 
@@ -336,6 +347,111 @@ namespace AP_
             saveTheLastSelectedPuzzlePosition(b_PuzzleRefPosition);
             initSelectedPuzzlePositionSPriteColor();
         }
+
+        //--> SteamVR : Detect object to drag
+        private void CheckObjectWithTag_SteamVR(bool b_PuzzleRefPosition)
+        {
+            if (!b_ValidationButtonPressed)
+            {
+                Hand targetHand = null;
+                GameObject gbHit = null;
+                Hand[] hands = Player.instance.GetComponentsInChildren<Hand>();
+                foreach (Hand hand in hands)
+                {
+                    if (hand.hoveringInteractable != null && hand.hoveringInteractable.gameObject.CompareTag("PuzzleObject"))
+                    {
+                        targetHand = hand;
+                        gbHit = hand.hoveringInteractable.gameObject;
+                        break;
+                    }
+                }
+
+                if (gbHit != null && !b_ValidationButtonPressed)
+                {
+                    if (ingameGlobalManager.instance.GetSteamVRValidateDown(targetHand))
+                    {
+                        //Debug.Log("Joystick Validation is pressed");
+                        b_ValidationButtonPressed = true;
+                        if (a_TakeObject) a_TakeObject.Play();
+                    }
+
+                    puzzleObjectIsDetected = true;
+
+                    //-> An object is selected. 
+                    if (b_ValidationButtonPressed && gbHit.CompareTag("PuzzleObject"))
+                    {
+                        if (currentSelectedGameObject != gbHit && !gbHit.GetComponent<Rigidbody>().isKinematic)
+                        {
+                            currentSelectedGameObject = gbHit;
+                            currentHand = targetHand;
+                            currentTargetObjectPosition = currentHand.gameObject.transform.position;
+
+                            if (gbHit.GetComponent<MeshCollider>())
+                            {
+                                gbHit.transform.GetComponent<MeshCollider>().isTrigger = false;
+                                gbHit.transform.GetComponent<MeshCollider>().convex = false;
+                                gbHit.transform.GetComponent<Rigidbody>().isKinematic = true;
+                            }
+
+                            if (gbHit.GetComponent<Interactable>())
+                            {
+                                gbHit.GetComponent<Interactable>().highlightOnHover = false;
+                                gbHit.GetComponent<Interactable>().enabled = false;
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            //-> Follow object
+            if (b_ValidationButtonPressed && currentHand != null)
+            {
+                currentTargetObjectPosition = currentHand.gameObject.transform.position;
+            }
+
+            if (currentHand != null && ingameGlobalManager.instance.GetSteamVRValidateUp(currentHand) && b_ValidationButtonPressed == true)
+            {
+                b_ValidationButtonPressed = false;
+
+                StartCoroutine(WaitBeforeDeselect(true));
+                //DeselectObject(true);
+            }
+
+            GameObject gbHit2 = null;
+            Hand[] hands2 = Player.instance.GetComponentsInChildren<Hand>();
+            foreach (Hand hand in hands2)
+            {
+                if (hand.hoveringInteractable != null && hand.hoveringInteractable.gameObject.CompareTag("PuzzleRefPosition"))
+                {
+                    gbHit2 = hand.hoveringInteractable.gameObject;
+                    break;
+                }
+            }
+
+            if (gbHit2 != null)
+            {
+                if (gbHit2.GetComponent<SpriteRenderer>())
+                {
+                    SpriteRenderer _currentHit = gbHit2.GetComponent<SpriteRenderer>();
+
+                    if (_currentHit.color.a == 0)
+                    {
+                        _currentHit.color = new Color(_currentHit.color.r, _currentHit.color.g, _currentHit.color.b, 0.5f);
+                        currentSelectedPuzzlePosition = gbHit2;
+                    }
+                    b_PuzzleRefPosition = true;
+                }
+            }
+            else
+            {
+                b_PuzzleRefPosition = false;
+            }
+
+            saveTheLastSelectedPuzzlePosition(b_PuzzleRefPosition);
+            initSelectedPuzzlePositionSPriteColor();
+        }
+
 
 
         //--> Keyboard Case : Detect object to drag
@@ -542,8 +658,6 @@ namespace AP_
                     }
                 }
             }
-
-
 
             saveTheLastSelectedPuzzlePosition(b_PuzzleRefPosition);
             initSelectedPuzzlePositionSPriteColor();
